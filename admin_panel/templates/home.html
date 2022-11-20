@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<form method ="post">
+    {% csrf_token %}
+<select class="form-select" onchange="this.form.submit()" name="search_filter" aria-label="Default select example" style="width:200px">
+    <option value="All" >All</option>
+    {% for res in status_obj %}
+    
+    {% if search_filter == res.id %}
+    <option selected value="{{res.id}}">{{res.status}} </option>
+    {% else %}
+    <option value="{{res.id}}">{{res.status}} </option>
+    {% endif %}
+
+    {% endfor %}
+  </select>
+  <input type="hidden" value="status_filter" name="form_type">
+</form>
+
+<button class="btn btn-primary" style="margin-left: 90%;" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Add</button>
+<table class="table">
+    <thead class="table-light">
+      <tr>
+        <th scope="col">No</th>
+        <th scope="col">Task</th>
+        <th scope="col">Status</th>
+        <th scope="col">Created at</th>
+        <th scope="col">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+        {% for res in task_obj %}
+      <tr>
+        <th scope="row">{{ forloop.counter }}</th>
+        <td>{{res.task_name}}</td>
+        <td>{{res.task_status}}</td>
+        <td>{{res.created_at}}</td>
+        <td>
+            <button data-bs-toggle="modal" data-bs-target="#update_task" class="building-link btn btn-warning"
+            data-name="{{ res.task_name }}"
+            data-id="{{ res.id }}"
+            
+            
+            >Update</button>
+            <a href='delete_task/{{res.id}}' class='btn btn-danger' onclick="return confirm('Are you sure you want to delete ?');">Delete</a>
+        </td>
+      </tr>
+      {% endfor %}     
+    </tbody>
+  </table>
+
+
+<!-- Modal -->
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="staticBackdropLabel">Add Task</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form method = "post">
+            {% csrf_token %}
+        <label>
+
+            <textarea required class='form-control' name="task" style='width:471px'></textarea>
+        </label>
+    
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </div>
+    </form>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="update_task" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="update_taskLabel">Add Task</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form method = "post" action="{% url 'update_task' %}">
+              {% csrf_token %}
+          <label>
+  fdsfsf
+              <textarea id="task_name" required class='form-control' name="task" style='width:471px'></textarea>
+          </label>
+          <select class="form-select" id="leaveCode" aria-label="Default select example" name='status_id'>
+            <option selected>Select Status</option>
+            {% for res in status_obj %}
+            <option  value="{{res.id}}">{{res.status}}</option>
+            {% endfor %}
+          </select>
+
+          <input type="hidden" name="task_id" id="task_id" >
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+      </form>
+      </div>
+    </div>
+  </div>
+
+
+  <script>
+    $('.building-link').click(function(){
+         var status_id = $(this).data('id')
+         document.getElementById("task_name").innerHTML = $(this).data('name');
+
+         document.getElementById("task_id").value = status_id
+
+       
+
+         document.getElementByID("leaveCode").value = status_id;
+
+
+        {% comment %} $('#building-name').html($(this).data('name'));
+        $('#building-id').html($(this).data('id')); {% endcomment %}
+        
+    });
+    </script>
+
+{% endblock %}
